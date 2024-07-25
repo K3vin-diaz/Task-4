@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/admin.css">
+    <script>
+        function toggle(source) {
+            checkboxes = document.getElementsByName('userIds');
+            for (var i = 0, n = checkboxes.length; i < n; i++) {
+                checkboxes[i].checked = source.checked;
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+        <h2>User Management</h2>
+        <div class="text-right">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-warning">Logout</button>
+            </form>
+            <label class="mt-2" th:text="${#authentication.name}"></label>
+        </div>
+    </div>
+    <form th:action="@{/users/block}" method="post">
+        <div class="toolbar">
+            <button type="submit" class="btn btn-danger">Block</button>
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('unblockForm').submit()">Unblock</button>
+            <button type="button" class="btn btn-danger" onclick="document.getElementById('deleteForm').submit()">Delete</button>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th><input type="checkbox" onclick="toggle(this);"></th>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Last Login Time</th>
+                <th>Registration Time</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td><input type="checkbox" name="userIds" th:value="${user.id}"></td>
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.lastLoginTime}"></td>
+                <td th:text="${user.registrationTime}"></td>
+                <td th:text="${user.active ? 'Active' : 'Blocked'}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+
+    <form id="unblockForm" th:action="@{/users/unblock}" method="post">
+        <input type="hidden" name="userIds" th:each="userId : ${users}" th:value="${userId.id}">
+    </form>
+
+    <form id="deleteForm" th:action="@{/users/delete}" method="post">
+        <input type="hidden" name="userIds" th:each="userId : ${users}" th:value="${userId.id}">
+    </form>
+</div>
+</body>
+</html>
